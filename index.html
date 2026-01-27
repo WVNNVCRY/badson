@@ -1,14 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Badson</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
 </head>
 
 <body>
+  <header class="site-header">
 
+    <button class="icon-button burger-button" type="button" aria-label="Открыть меню" aria-expanded="false"
+      aria-controls="side-menu">
+
+      <span class="dot-grid">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+
+    </button>
+
+    <button class="icon-button cart-button" type="button" aria-label="Корзина">
+
+      <img alt="" decoding="async" height="28" loading="eager"
+        src="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center"
+        srcset="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center 1x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=56&amp;height=56&amp;crop=center 2x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=84&amp;height=84&amp;crop=center 3x"
+        width="28" style="aspect-ratio:1/1" class="cart-icon">
+
+    </button>
+
+  </header>
+
+  <div class="menu-overlay" data-menu-overlay></div>
+
+  <aside class="side-menu" id="side-menu" aria-hidden="true">
+    <nav class="side-menu__content">
+      <a href="#">Home</a>
+      <a href="#">Core</a>
+      <a href="#">Info</a>
+      <a href="#">Order status</a>
+    </nav>
+  </aside>
+
+  <script src="./scripts/script.js"></script>
 </body>
 
 </html>
