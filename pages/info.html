@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BADSON</title>
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/accordion.css" />
+</head>
+
+<body>
+  <header class="site-header">
+
+    <button class="icon-button burger-button" type="button" aria-label="Открыть меню" aria-expanded="false"
+      aria-controls="side-menu">
+
+      <span class="dot-grid">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+
+    </button>
+
+    <button class="icon-button cart-button" type="button" aria-label="Корзина">
+
+      <img alt="" decoding="async" height="28" loading="eager"
+        src="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center"
+        srcset="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center 1x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=56&amp;height=56&amp;crop=center 2x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=84&amp;height=84&amp;crop=center 3x"
+        width="28" style="aspect-ratio:1/1" class="cart-icon">
+
+    </button>
+
+  </header>
+
+  <div class="menu-overlay" data-menu-overlay></div>
+
+  <aside class="side-menu" id="side-menu" aria-hidden="true">
+    <nav class="side-menu__content">
+      <a href="../index.html">Home</a>
+      <a href="../index.html">Core</a>
+      <a href="./info.html">Info</a>
+      <a href="#">Order status</a>
+    </nav>
+  </aside>
+
+  <main class="site-main">
+
+    <section class="accordion">
+
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span>CONTACT</span>
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-panel">
+          <div class="acc-content">
+            <p><strong>EMAIL</strong><br>INFO@BADSON.US</p>
+            <p><strong>INSTAGRAM</strong><br>BADSON.US</p>
+            <p><strong>TWITTER</strong><br>BADSON__</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span>POLICY</span>
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-panel">
+          <div class="acc-content">
+            <p><strong>CUSTOMS</strong></p>
+            <ul>
+              <li>ALL CUSTOMERS OUTSIDE OF THE UNITED STATES ARE RESPONSIBLE FOR FEES</li>
+              <li>CHECK YOUR COUNTRY POLICIES BEFORE BUYING</li>
+              <li>YOU AGREE TO PAY ALL FEES AND TAXES</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span>PRE-ORDER</span>
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-panel">
+          <div class="acc-content">
+            <ul>
+              <li>PRE-ORDERS SHIP IN 6–8 WEEKS</li>
+              <li>NON-REFUNDABLE</li>
+              <li>ORDERS OUTSIDE US SHIP TOGETHER</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span>CARE</span>
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-panel">
+          <div class="acc-content">
+            <ul>
+              <li>WASH WITH COLD WATER</li>
+              <li>HANG DRY</li>
+              <li>DO NOT BLEACH</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../scripts/info-accordion.js"></script>
+  <script src="../scripts/script.js"></script>
+</body>
+
+</html>
