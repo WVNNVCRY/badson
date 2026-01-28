@@ -469,7 +469,6 @@ button {
   border-bottom: 2px solid #111;
 }
 
-/* ===================== PRODUCT PAGE (pdp-col) ===================== */
 .pdp-col {
   padding: 40px 24px;
 }
@@ -480,7 +479,6 @@ button {
   text-align: center;
 }
 
-/* ✅ фикс размера главной фотки: 480x600 */
 .pdp-col__hero {
   background: #f3f3f3;
   width: 480px;
@@ -647,8 +645,6 @@ button {
   line-height: 1.45;
 }
 
-/* ===== PDP: FIT/SIZING switch + table ===== */
-
 .pdp-size {
   margin-top: 15px;
   display: inline-flex;
@@ -706,11 +702,14 @@ button {
   font-weight: 900;
 }
 
-/* .pdp-table thead th {
-  padding-bottom: 26px;
-} */
 
-/* ===================== RESPONSIVE ===================== */
+
+
+
+
+
+
+
 @media (max-width: 900px) {
   :root {
     --menu-width: min(60vw, 380px);
@@ -765,13 +764,11 @@ button {
     grid-template-columns: 1fr;
   }
 
-  /* hero картинка на мобилке не влезет 480x600 => делаем адаптив */
   .pdp-col__hero {
     width: 100%;
     max-width: 480px;
     height: auto;
     aspect-ratio: 4 / 5;
-    /* 480x600 */
   }
 
   .pdp-col__hero-img {

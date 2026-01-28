@@ -1,11 +1,7 @@
-// scripts/currency.js
-// Пересчёт цен из USD в выбранную валюту + округление вниз до .00
-
 const STORAGE_KEY = "badson_currency_v1";
 const RATE_CACHE_KEY = "badson_rates_v1";
 const RATE_TTL_MS = 1000 * 60 * 60 * 12; // 12 часов
 
-// Какие валюты есть в твоём селекте
 const CURRENCIES = {
   USD: { symbol: "$", label: "US (USD $)" },
   CAD: { symbol: "$", label: "Canada (CAD $)" },
@@ -18,7 +14,6 @@ const CURRENCIES = {
   NZD: { symbol: "$", label: "New Zealand (NZD $)" },
 };
 
-// Пытаемся определить валюту по тексту опции типа: "US (USD $)"
 function extractCurrencyCode(str) {
   if (!str) return null;
   const m = String(str).match(/\(([A-Z]{3})\s/);
@@ -47,9 +42,7 @@ function formatMoneyRound00(amountInUSD, code, rates) {
   return `${sym}${converted.toFixed(2)}`;
 }
 
-// Кэш курсов, чтобы не долбить сеть
 async function getRatesUSD() {
-  // cache
   try {
     const cached = JSON.parse(localStorage.getItem(RATE_CACHE_KEY) || "null");
     if (cached?.ts && cached?.rates && (Date.now() - cached.ts) < RATE_TTL_MS) {
@@ -57,8 +50,6 @@ async function getRatesUSD() {
     }
   } catch { }
 
-  // API (Frankfurter даёт валюты относительно EUR, поэтому удобнее взять open.er-api.com)
-  // Если вдруг отвалится — просто вернёт USD=1 и ничего не сломает.
   const url = "https://open.er-api.com/v6/latest/USD";
 
   try {
@@ -68,7 +59,6 @@ async function getRatesUSD() {
 
     if (!rates || !rates.USD) throw new Error("No rates");
 
-    // Оставим только нужные
     const picked = {};
     Object.keys(CURRENCIES).forEach((code) => {
       picked[code] = rates[code];
@@ -80,22 +70,18 @@ async function getRatesUSD() {
 
     return picked;
   } catch (e) {
-    // fallback: хотя бы USD
     const fallback = {};
     Object.keys(CURRENCIES).forEach((code) => (fallback[code] = 1));
     return fallback;
   }
 }
 
-// Мы не заставляем тебя переписывать весь рендер.
-// Берём цены из DOM (один раз парсим) и храним базовый USD в data-usd
 function collectMoneyNodes() {
-  // Под твои классы (каталог / товар / корзина)
   const selectors = [
     ".product-card__price",
     ".pdp-col__price",
     ".cart-price",
-    "[data-money]" // на будущее, если захочешь ставить явно
+    "[data-money]",
   ];
 
   const nodes = new Set();
@@ -103,16 +89,13 @@ function collectMoneyNodes() {
     document.querySelectorAll(sel).forEach((el) => nodes.add(el));
   });
 
-  // Проставляем data-usd, если нет
   nodes.forEach((el) => {
     if (el.dataset.usd) return;
 
-    // Парсим число из текста: "$220.00" / "220" / "€199.00" / "₩142,000.00"
     const raw = (el.textContent || "").replace(/,/g, "").trim();
     const num = Number(raw.replace(/[^\d.]/g, ""));
     if (!Number.isFinite(num)) return;
 
-    // Предполагаем, что текущий текст — это USD (потому что из стейта у тебя USD)
     el.dataset.usd = String(num);
   });
 
@@ -128,8 +111,6 @@ async function applyCurrency(code) {
     if (!Number.isFinite(usd)) return;
     el.textContent = formatMoneyRound00(usd, code, rates);
   });
-
-  // если где-то есть "Subtotal" отдельным элементом — тоже поймает по .cart-price или data-money
 }
 
 function hookFooterSelect() {
@@ -154,16 +135,13 @@ function syncSelectUIToSavedCurrency() {
   const root = document.querySelector("[data-currency]");
   if (!root) return;
 
-  // обновим текст на кнопке (чтобы при перезагрузке было то же)
   const valueEl = root.querySelector("[data-currency-value]");
   if (valueEl) {
-    // найдём опцию с нужным кодом и возьмём её data-value
     const opts = root.querySelectorAll(".currency-select__opt");
     const match = Array.from(opts).find((o) => extractCurrencyCode(o.dataset.value || o.textContent) === code);
     if (match) valueEl.textContent = match.dataset.value || match.textContent.trim();
   }
 
-  // подсветка выбранной опции
   const opts = root.querySelectorAll(".currency-select__opt");
   opts.forEach((o) => {
     const c = extractCurrencyCode(o.dataset.value || o.textContent);
@@ -182,8 +160,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 window.Currency = window.Currency || {};
 
 window.Currency.apply = async function applyNow() {
-  const code = getSavedCurrency();       // твоя функция из currency.js
-  await applyCurrency(code);             // твоя функция пересчёта
+  const code = getSavedCurrency();
+  await applyCurrency(code);
 };
 
 window.Currency.set = async function setNow(code) {

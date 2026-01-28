@@ -7,10 +7,9 @@ const params = new URLSearchParams(location.search);
 const slug = params.get("slug");
 const presetSize = params.get("SIZE");
 
-// --- paths fix (index in root, product in /pages) ---
 function assetUrl(path) {
   if (!path) return "";
-  const clean = String(path).replace(/^(\.\/|\/)/, ""); // remove "./" and leading "/"
+  const clean = String(path).replace(/^(\.\/|\/)/, "");
   return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
 
@@ -81,7 +80,6 @@ function renderSizingTable(product, unit = "in") {
     })
     .join("");
 
-  // Визуально как у них: IN / CM (подчеркивание активного сделаем через CSS)
   return `
     <table class="pdp-table" data-sizing-table data-unit="${unit}">
       <thead>
@@ -233,12 +231,11 @@ function render() {
     </section>
   `;
 
-  // применить валюту (если есть)
+
   if (window.Currency?.apply) {
     window.Currency.apply();
   }
 
-  // thumbs click => change hero
   root.querySelectorAll("[data-thumb]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = Number(btn.dataset.thumb);
@@ -247,7 +244,6 @@ function render() {
     });
   });
 
-  // size selection
   root.querySelectorAll("[data-size]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedSize = btn.dataset.size;
@@ -256,7 +252,6 @@ function render() {
     });
   });
 
-  // tabs
   root.querySelectorAll("[data-tab]").forEach((btn) => {
     btn.addEventListener("click", () => {
       activeTab = btn.dataset.tab;
@@ -264,7 +259,6 @@ function render() {
     });
   });
 
-  // unit toggle (only on FIT tab)
   if (activeTab === "fit") {
     const unitRoot = root.querySelector("[data-unit-root]");
     if (unitRoot) {
@@ -278,7 +272,6 @@ function render() {
     }
   }
 
-  // CTA
   root.querySelector(".pdp-col__cta").addEventListener("click", () => {
     if (!selectedSize) return;
 
@@ -293,7 +286,6 @@ function render() {
       img: product.img,
     });
 
-    // pages/product.html -> pages/cart.html
     location.href = "./cart.html";
   });
 }

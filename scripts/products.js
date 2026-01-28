@@ -88,7 +88,6 @@ export function getProductBySlug(slug) {
   return PRODUCTS.find((p) => p.slug === slug) || null;
 }
 
-// amount is like 220, 170 (not cents)
 export function formatMoney(amount, currency = "USD") {
   const value = Number(amount).toFixed(2);
   const symbol = currency === "USD" ? "$" : "";
