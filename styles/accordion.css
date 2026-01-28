@@ -1,0 +1,51 @@
+.accordion {
+  max-width: 900px;
+  padding: 16px;
+  font-family: Inter, sans-serif;
+}
+
+.acc-trigger {
+  all: unset;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+
+  padding: 20px 0;
+  cursor: pointer;
+}
+
+.acc-icon {
+  font-size: 28px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+  margin-left: 5px;
+}
+
+.acc-item.is-open .acc-icon {
+  transform: rotate(45deg);
+}
+
+.acc-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+}
+
+.acc-content {
+  padding: 10px 0 20px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.acc-content p,
+.acc-content li {
+  margin-bottom: 8px;
+}
+
+.acc-content ul {
+  padding-left: 16px;
+}
