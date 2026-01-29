@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: "Heros", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
   --header-height: 72px;
   --menu-width: min(30vw, 420px);
 }
@@ -99,8 +99,8 @@ button {
 }
 
 .cart-button {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
 }
 
 .cart-icon {
@@ -613,10 +613,13 @@ button {
   text-transform: uppercase;
   font-size: 12px;
   opacity: .85;
+  padding-bottom: 2px;
 }
 
 .pdp-col__tab.is-active {
   opacity: 1;
+  color: oklch(62.7% .194 149.214);
+  box-shadow: 0 2px 0 0 oklch(62.7% .194 149.214);
 }
 
 .pdp-col__panel {
@@ -655,18 +658,18 @@ button {
   text-transform: uppercase;
 }
 
-.pdp-size__unit {
+.pdp-unit {
   all: unset;
   cursor: pointer;
   font-size: 13px;
   opacity: 0.55;
-  border-bottom: 2px solid transparent;
 }
 
-.pdp-size__unit.is-active {
+.pdp-unit__in.is-active,
+.pdp-unit__cm.is-active {
   opacity: 1;
   color: oklch(62.7% .194 149.214);
-  border-bottom-color: oklch(62.7% .194 149.214);
+  border-bottom: 2px solid oklch(62.7% .194 149.214);
 }
 
 .pdp-size__slash {
@@ -676,21 +679,25 @@ button {
 .pdp-table-wrap {
   margin-top: 13px;
   overflow-x: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pdp-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+
 }
 
 .pdp-table th,
 .pdp-table td {
   padding: 10px 0px;
-  text-align: left;
+  text-align: center;
   font-weight: 900;
   text-transform: uppercase;
   font-size: 13px;
+  white-space: wrap;
 }
 
 .pdp-table__first {
@@ -698,7 +705,6 @@ button {
 }
 
 .pdp-table tbody th {
-  text-align: left;
   font-weight: 900;
 }
 
@@ -727,6 +733,11 @@ button {
     text-align: left;
   }
 
+  .product-card__title,
+  .product-card__subtitle {
+    font-size: 14px;
+  }
+
   .footer-inner {
     grid-template-columns: 1fr;
     justify-items: center;
@@ -752,7 +763,7 @@ button {
   }
 
   .site-header {
-    padding: 10px;
+    padding: 24px;
   }
 
   .side-menu {
@@ -762,6 +773,11 @@ button {
 
   .catalog-grid {
     grid-template-columns: 1fr;
+  }
+
+  .product-card__title,
+  .product-card__subtitle {
+    font-size: 18px;
   }
 
   .pdp-col__hero {
@@ -777,7 +793,20 @@ button {
 
   .pdp-table th,
   .pdp-table td {
-    font-size: 16px;
-    padding: 14px 8px;
+    padding: 6px 4px;
+  }
+
+  .pdp-col__thumbs {
+    grid-template-columns: repeat(3, 96px);
+    column-gap: 5px;
+    row-gap: 5px;
+  }
+}
+
+@media (max-width: 375px) {
+
+  .product-card__title,
+  .product-card__subtitle {
+    font-size: 13px;
   }
 }
