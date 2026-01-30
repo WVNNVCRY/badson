@@ -1,92 +1,123 @@
-import { readCart, setQty, removeItem } from "./cart-store.js";
-import { getProductBySlug, formatMoney } from "./products.js";
+import { getCart, incQty, decQty, removeFromCart, calcSubtotalUSD } from "./cart-store.js";
 
-const root = document.getElementById("cartRoot");
-
-function calcSubtotal(items) {
-  return items.reduce((sum, i) => {
-    const p = getProductBySlug(i.slug);
-    if (!p) return sum;
-    return sum + p.price * i.qty;
-  }, 0);
+function assetUrl(path) {
+  if (!path) return "";
+  const clean = String(path).replace(/^(\.\/|\/)/, "");
+  return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
 
-function render() {
-  const cart = readCart();
+function moneyTemplate(usdValue) {
+  const n = Number(usdValue) || 0;
+  return `<span data-money data-usd="${n.toFixed(2)}">$${n.toFixed(2)}</span>`;
+}
 
-  if (cart.items.length === 0) {
-    root.innerHTML = `
-      <div class="cart-empty">
-        <h2>CART</h2>
-        <p>YOUR CART IS CURRENTLY EMPTY.</p>
-        <a href="./index.html" class="link">CONTINUE BROWSING</a>
-      </div>
-    `;
+function renderEmpty(root) {
+  root.innerHTML = `
+    <div class="cart-empty">
+      <p style="font-weight:900; text-transform:uppercase; letter-spacing:.06em;">Cart is empty</p>
+      <p style="margin-top:12px;">
+        <a class="link" href="${location.pathname.includes("/pages/") ? "../index.html" : "./index.html"}">Continue shopping</a>
+      </p>
+    </div>
+  `;
+}
+
+function render(root) {
+  const cart = getCart();
+
+  if (!cart.length) {
+    renderEmpty(root);
+    if (window.Currency?.apply) window.Currency.apply();
     return;
   }
 
-  const subtotal = calcSubtotal(cart.items);
+  const subtotalUSD = calcSubtotalUSD(cart);
 
   root.innerHTML = `
-    <div class="cart-head">
-      <div class="cart-title">Shopping Bag</div>
-      <div class="cart-total-label">Total</div>
-      <button class="checkout" type="button">CHECK OUT</button>
-    </div>
+    <section class="cart">
+      <div class="cart-head">
+        <div style="font-weight:900; text-transform:uppercase; letter-spacing:.06em;">Cart</div>
 
-    <div class="cart-list">
-      ${cart.items.map(i => {
-    const p = getProductBySlug(i.slug);
-    if (!p) return "";
-    return `
-          <div class="cart-row" data-id="${i.id}">
-            <img class="cart-img" src="${p.img}" alt="">
-            <div class="cart-meta">
-              <div class="cart-name">${p.titleTop} ${p.titleBottom}</div>
-              <div class="cart-size">${i.size}</div>
+        <div class="cart-sub">
+          <div>Subtotal  ${moneyTemplate(subtotalUSD)}</div>
+        </div>
 
-              <div class="qty">
-                <button class="qty-btn" data-act="minus" type="button">—</button>
-                <div class="qty-val">${i.qty}</div>
-                <button class="qty-btn" data-act="plus" type="button">+</button>
+        <button class="checkout" type="button">Checkout</button>
+      </div>
+
+      <div class="cart-list">
+        ${cart
+      .map((item) => {
+        const img = assetUrl(item.img);
+        const lineUSD = (Number(item.price) || 0) * (Number(item.qty) || 1);
+
+        return `
+              <div class="cart-row" data-row data-id="${item.id}">
+                <img class="cart-img" src="${img}" alt="">
+                <div>
+                  <div class="cart-name">${item.title || ""}</div>
+                  ${item.subtitle ? `<div class="cart-size">${item.subtitle}</div>` : ""}
+                  <div class="cart-size">Size: ${item.size}</div>
+
+                  <div class="qty">
+                    <button class="qty-btn" type="button" data-dec>-</button>
+                    <div style="font-weight:900;">${item.qty}</div>
+                    <button class="qty-btn" type="button" data-inc>+</button>
+                  </div>
+
+                  <button class="remove" type="button" data-remove>Remove</button>
+                </div>
+
+                <div class="cart-price">
+                  ${moneyTemplate(lineUSD)}
+                </div>
               </div>
+            `;
+      })
+      .join("")}
+      </div>
 
-              <button class="remove" data-act="remove" type="button">REMOVE</button>
-            </div>
-
-            <div class="cart-price">${formatMoney(p.price * i.qty, p.currency)}</div>
-          </div>
-        `;
-  }).join("")}
-    </div>
-
-    <div class="cart-sub">
-      <div>Subtotal</div>
-      <div>${formatMoney(subtotal, "USD")}</div>
-    </div>
+      <div class="cart-sub">
+        <div>Subtotal</div>
+        <div>${moneyTemplate(subtotalUSD)}</div>
+      </div>
+    </section>
   `;
 
-  root.querySelectorAll(".cart-row").forEach(row => {
-    const id = row.dataset.id;
-    row.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-act]");
-      if (!btn) return;
-
-      const cartNow = readCart();
-      const item = cartNow.items.find(x => x.id === id);
-      if (!item) return;
-
-      if (btn.dataset.act === "minus") setQty(id, item.qty - 1);
-      if (btn.dataset.act === "plus") setQty(id, item.qty + 1);
-      if (btn.dataset.act === "remove") removeItem(id);
-
-      render();
-    });
-  });
-
-  root.querySelector(".checkout").addEventListener("click", () => {
-    alert("Checkout пока заглушка 🙂");
-  });
+  if (window.Currency?.apply) window.Currency.apply();
 }
 
-render();
+(function initCartPage() {
+  const root = document.getElementById("cartRoot");
+  if (!root) return;
+
+  render(root);
+
+  root.addEventListener("click", (e) => {
+    const row = e.target.closest("[data-row]");
+    if (!row) return;
+
+    const id = row.dataset.id;
+    if (!id) return;
+
+    if (e.target.closest("[data-inc]")) {
+      incQty(id, 1);
+      render(root);
+      return;
+    }
+
+    if (e.target.closest("[data-dec]")) {
+      decQty(id, 1);
+      render(root);
+      return;
+    }
+
+    if (e.target.closest("[data-remove]")) {
+      removeFromCart(id);
+      render(root);
+      return;
+    }
+  });
+
+  window.addEventListener("cart:change", () => render(root));
+})();
