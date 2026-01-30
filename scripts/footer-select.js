@@ -56,14 +56,12 @@
 
     if (!menu.hasAttribute("tabindex")) menu.setAttribute("tabindex", "-1");
 
-    // === restore (по уникальному value) ===
     const savedValue = localStorage.getItem(STORAGE_KEY);
     if (savedValue) {
       selectByValue(root, savedValue);
       const code = extractCurrencyCode(savedValue);
       if (code && window.Currency?.set) window.Currency.set(code);
     } else {
-      // если ничего не сохранено — синхроним с текущим текстом кнопки
       const currentText = (valueEl.textContent || "").trim();
       if (currentText) {
         selectByValue(root, currentText);
@@ -72,7 +70,6 @@
       }
     }
 
-    // 💣 анти-баг: если другой скрипт пометил несколько — почистим
     cleanupSelected(root);
 
     const open = () => {
@@ -98,7 +95,6 @@
       root.classList.contains("is-open") ? close() : open();
     });
 
-    // choose option
     opts.forEach((opt) => {
       opt.addEventListener("click", (e) => {
         e.preventDefault();
@@ -112,7 +108,6 @@
         const code = extractCurrencyCode(text);
         if (code && window.Currency?.set) window.Currency.set(code);
 
-        // и ещё раз почистим, если вдруг Currency.set что-то трогает
         cleanupSelected(root);
 
         close();
@@ -120,7 +115,6 @@
       });
     });
 
-    // click outside (capture)
     document.addEventListener(
       "click",
       (e) => {
@@ -129,7 +123,6 @@
       true
     );
 
-    // esc
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") close();
     });
@@ -138,14 +131,12 @@
   function initAll() {
     document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
       initOne(root);
-      // на всякий случай чистим при каждом проходе
       cleanupSelected(root);
     });
   }
 
   initAll();
 
-  // если футер/опции дорендериваются — переинициализируем
   const mo = new MutationObserver(() => initAll());
   mo.observe(document.documentElement, { childList: true, subtree: true });
 })();

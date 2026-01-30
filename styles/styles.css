@@ -32,7 +32,6 @@ main {
   margin-top: auto;
 }
 
-/* НЕ делай all: unset для всех ссылок — потом будет ад с доступностью/подчеркиваниями */
 a {
   color: inherit;
   text-decoration: none;
@@ -47,7 +46,6 @@ button {
   cursor: pointer;
 }
 
-/* ===================== HEADER ===================== */
 .site-header {
   display: flex;
   align-items: center;
@@ -101,6 +99,28 @@ button {
 .cart-button {
   width: 28px;
   height: 28px;
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 12px;
+  height: 12px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 7px;
+  font-weight: 800;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge.is-visible {
+  display: inline-flex;
 }
 
 .cart-icon {
@@ -109,7 +129,6 @@ button {
   display: block;
 }
 
-/* ===================== SIDE MENU ===================== */
 .menu-overlay {
   position: fixed;
   top: 0;
@@ -167,7 +186,6 @@ button {
   transition-duration: .2s;
 }
 
-/* ===================== FOOTER ===================== */
 .site-footer {
   background: #fff;
   padding: 28px 0;
@@ -210,7 +228,6 @@ button {
   opacity: .9;
 }
 
-/* Currency select */
 .currency-select {
   position: relative;
 }
@@ -319,7 +336,6 @@ button {
   outline-offset: 4px;
 }
 
-/* ===================== CATALOG ===================== */
 .catalog {
   max-width: 1200px;
   margin: 0 auto;
@@ -367,7 +383,6 @@ button {
   opacity: .9;
 }
 
-/* ===================== CART ===================== */
 .cart {
   max-width: 1000px;
   margin: 0 auto;
@@ -391,6 +406,11 @@ button {
   padding: 14px 16px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.checkout:hover {
+  background-color: #d9d9d9;
+  transition-duration: .2s;
 }
 
 .cart-list {
