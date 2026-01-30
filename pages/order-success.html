@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BADSON | Info</title>
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/accordion.css" />
+  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/nimbus-sans-l" type="text/css" />
+</head>
+
+<body>
+  <header class="site-header">
+
+    <button class="icon-button burger-button" type="button" aria-label="Открыть меню" aria-expanded="false"
+      aria-controls="side-menu">
+
+      <span class="dot-grid">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+
+    </button>
+
+    <a class="icon-button cart-button" type="button" aria-label="Корзина" href="./cart.html">
+
+      <img alt="" decoding="async" height="28" loading="eager"
+        src="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center"
+        srcset="https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=28&amp;height=28&amp;crop=center 1x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=56&amp;height=56&amp;crop=center 2x, https://cdn.shopify.com/oxygen-v2/39987/33188/69516/2680914/assets/bag-CUGW3ICK.avif?width=84&amp;height=84&amp;crop=center 3x"
+        width="28" style="aspect-ratio:1/1" class="cart-icon">
+      <span class="cart-badge" data-cart-badge></span>
+    </a>
+
+  </header>
+
+  <div class="menu-overlay" data-menu-overlay></div>
+
+  <aside class="side-menu" id="side-menu" aria-hidden="true">
+    <nav class="side-menu__content">
+      <a href="../index.html">Home</a>
+      <a href="../index.html">Core</a>
+      <a href="./info.html">Info</a>
+      <a href="#">Order status</a>
+    </nav>
+  </aside>
+
+  <main class="success">
+    <div class="success__wrap">
+      <div class="success__title">Thank you for your order</div>
+      <div class="success__text">Your order has been placed successfully.</div>
+
+      <div class="success__card">
+        <div class="success__row">
+          <span class="success__label">Order number</span>
+          <b class="success__value" data-order-number>-</b>
+        </div>
+        <div class="success__row">
+          <span class="success__label">Email</span>
+          <span class="success__value" data-order-email>-</span>
+        </div>
+        <div class="success__row">
+          <span class="success__label">Total</span>
+          <span class="success__value" data-order-total>-</span>
+        </div>
+      </div>
+
+      <a class="success__btn" href="../index.html">Continue shopping</a>
+    </div>
+  </main>
+
+
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-left footer-col">
+
+        <div class="currency-select" data-currency>
+          <button class="currency-select__btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="currency-select__value" data-currency-value>US (USD $)</span>
+
+            <svg class="currency-select__chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </button>
+
+          <div class="currency-select__menu" role="listbox" tabindex="-1" aria-label="Currency list">
+            <button class="currency-select__opt is-selected" role="option" type="button" data-value="US (USD $)"
+              aria-selected="true">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">US (USD $)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Canada - French (CAD $)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Canada - French (CAD $)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Canada - English (CAD $)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Canada - English (CAD $)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="France (EUR €)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">France (EUR €)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Germany (EUR €)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Germany (EUR €)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Spain (EUR €)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Spain (EUR €)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Italy (EUR €)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Italy (EUR €)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="China (CNY ¥)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">China (CNY ¥)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Japan (JPY ¥)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Japan (JPY ¥)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="South Korea (KRW ₩)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">South Korea (KRW ₩)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="United Kingdom (GBP £)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">United Kingdom (GBP £)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="Australia (AUD $)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">Australia (AUD $)</span>
+            </button>
+
+            <button class="currency-select__opt" role="option" type="button" data-value="New Zealand (NZD $)"
+              aria-selected="false">
+              <span class="currency-select__check" aria-hidden="true">✓</span>
+              <span class="currency-select__text">New Zealand (NZD $)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-center footer-col">
+
+        <p>© 2025, <a href="https://badson.us/">BAD SON</a></p>
+      </div>
+
+
+      <div class="footer-right footer-col">
+
+        <ul class="pay">
+
+          <li>VISA</li>
+          <li>DISCOVER</li>
+          <li>SHOPIFY</li>
+          <li>APPLE</li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script src="../scripts/info-accordion.js"></script>
+  <script src="../scripts/currency.js"></script>
+  <script src="../scripts/footer-select.js"></script>
+  <script src="../scripts/script.js"></script>
+  <script type="module" src="../scripts/order-success.js"></script>
+  <script type="module" src="../scripts/cart-badge.js"></script>
+</body>
+
+</html>

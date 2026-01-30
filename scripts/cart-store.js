@@ -30,7 +30,24 @@ function loadCart() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
   }
 
-  return arr;
+  return arr.map((it) => {
+    const slug = String(it.slug || "").trim();
+    const size = String(it.size || "").trim();
+    const id = it.id ?? (slug && size ? `${slug}__${size}` : null);
+
+    return {
+      ...it,
+      id,
+      slug,
+      size,
+      qty: Number(it.qty || 0) || 1,
+      price: Number(it.price || 0) || 0,
+      currency: it.currency || "USD",
+      title: it.title || "",
+      subtitle: it.subtitle || "",
+      img: it.img || "",
+    };
+  }).filter((it) => it.id);
 }
 
 function saveCart(arr) {
@@ -50,50 +67,7 @@ export function getCart() {
 
 export function calcSubtotalUSD(items) {
   const arr = Array.isArray(items) ? items : loadCart();
-  return arr.reduce(
-    (sum, it) => sum + Number(it.price || 0) * Number(it.qty || 0),
-    0
-  );
-}
-
-export function incQty(id, step = 1) {
-  const cart = loadCart();
-  const idx = cart.findIndex((x) => x.id === id);
-  if (idx < 0) return cart;
-
-  const next = [...cart];
-  const add = clampQty(step);
-
-  next[idx] = {
-    ...next[idx],
-    qty: Number(next[idx].qty || 0) + add,
-  };
-
-  saveCart(next);
-  window.dispatchEvent(new Event("cart:change"));
-  return next;
-}
-
-export function decQty(id, step = 1) {
-  const cart = loadCart();
-  const idx = cart.findIndex((x) => x.id === id);
-  if (idx < 0) return cart;
-
-  const next = [...cart];
-  const sub = clampQty(step);
-  const cur = Number(next[idx].qty || 0);
-  const newQty = cur - sub;
-
-  if (newQty <= 0) {
-    const filtered = next.filter((x) => x.id !== id);
-    saveCart(filtered);
-    return filtered;
-  }
-
-  next[idx] = { ...next[idx], qty: newQty };
-  saveCart(next);
-  window.dispatchEvent(new Event("cart:change"));
-  return next;
+  return arr.reduce((sum, it) => sum + Number(it.price || 0) * Number(it.qty || 0), 0);
 }
 
 export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", price = 0, currency = "USD", img = "" }) {
@@ -110,12 +84,8 @@ export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", pric
 
   if (idx >= 0) {
     const next = [...cart];
-    next[idx] = {
-      ...next[idx],
-      qty: Number(next[idx].qty || 0) + add,
-    };
+    next[idx] = { ...next[idx], qty: Number(next[idx].qty || 0) + add };
     saveCart(next);
-    window.dispatchEvent(new Event("cart:change"));
     return next;
   }
 
@@ -138,10 +108,51 @@ export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", pric
   return next;
 }
 
-export function removeFromCart(id) {
+export function incQty(slug, size, step = 1) {
+  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
+  const cart = loadCart();
+  const idx = cart.findIndex((x) => x.id === id);
+  if (idx < 0) return cart;
+
+  const next = [...cart];
+  const add = clampQty(step);
+  next[idx] = { ...next[idx], qty: Number(next[idx].qty || 0) + add };
+
+  saveCart(next);
+  return next;
+}
+
+export function decQty(slug, size, step = 1) {
+  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
+  const cart = loadCart();
+  const idx = cart.findIndex((x) => x.id === id);
+  if (idx < 0) return cart;
+
+  const next = [...cart];
+  const sub = clampQty(step);
+  const cur = Number(next[idx].qty || 0);
+  const newQty = cur - sub;
+
+  if (newQty <= 0) {
+    const filtered = next.filter((x) => x.id !== id);
+    saveCart(filtered);
+    return filtered;
+  }
+
+  next[idx] = { ...next[idx], qty: newQty };
+  saveCart(next);
+  return next;
+}
+
+export function removeFromCart(slug, size) {
+  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
   const cart = loadCart();
   const next = cart.filter((x) => x.id !== id);
   saveCart(next);
-  window.dispatchEvent(new Event("cart:change"));
   return next;
+}
+
+export function clearCart() {
+  saveCart([]);
+  return [];
 }
