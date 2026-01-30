@@ -1,4 +1,3 @@
-// scripts/product-page.js
 import { getProductBySlug, formatMoney } from "./products.js";
 import { addToCart } from "./cart-store.js";
 
@@ -31,7 +30,6 @@ if (!product) {
   throw new Error("Product not found");
 }
 
-// ====== SIZING HELPERS ======
 function ensureCm(product) {
   const rows = product.sizing?.rows || [];
   rows.forEach((r) => {
@@ -61,7 +59,6 @@ function renderShippingTab(product) {
   return renderBullets(product.shippingList || []);
 }
 
-// ====== TABLE WITH ONE BUTTON ======
 function renderSizingTable(product, unit = "in") {
   const sizing = product.sizing || {};
   const cols = sizing.columns || [];
@@ -111,7 +108,6 @@ function renderFitTab(product, unit = "in") {
   `;
 }
 
-// ====== PAGE STATE ======
 ensureCm(product);
 
 const titleMain = product.title ?? "";

@@ -42,7 +42,7 @@ function render(root) {
           <div>Subtotal  ${moneyTemplate(subtotalUSD)}</div>
         </div>
 
-        <button class="checkout" type="button">Checkout</button>
+        <a class="checkout" href="./checkout.html">Checkout</a>
       </div>
 
       <div class="cart-list">

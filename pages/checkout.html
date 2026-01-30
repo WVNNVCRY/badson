@@ -53,9 +53,193 @@
   </aside>
 
 
-  <main class="cart">
-    <div class="cart-root" id="cartRoot">
+  <main class="checkout-page">
+    <div class="checkout-page__grid">
+      <section class="checkout-page__left">
+        <div class="checkout-page__inner">
 
+          <form id="checkoutForm">
+            <div>
+              <div class="checkout-page__express-title">Express checkout</div>
+
+              <div class="checkout-page__express-row">
+                <button class="checkout-page__express-btn" type="button">Shop</button>
+                <button class="checkout-page__express-btn" type="button">PayPal</button>
+                <button class="checkout-page__express-btn" type="button">G Pay</button>
+              </div>
+
+              <div class="checkout-page__or">
+                <span></span>
+                <div>OR</div>
+                <span></span>
+              </div>
+            </div>
+
+            <div class="checkout-block">
+              <div class="checkout-block__head">
+                <div class="checkout-block__title">Contact</div>
+                <a class="checkout-block__link" href="#">Sign in</a>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Email</span>
+                <input class="field__input" type="email" placeholder="Email" />
+              </label>
+
+              <label class="check">
+                <input type="checkbox" checked />
+                <span>Email me with news and offers</span>
+              </label>
+            </div>
+
+            <div class="checkout-block">
+              <div class="checkout-block__head">
+                <div class="checkout-block__title">Delivery</div>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Country/Region</span>
+                <select class="field__input" data-country-select>
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>France</option>
+                  <option>Germany</option>
+                  <option>Spain</option>
+                  <option>Italy</option>
+                  <option>China</option>
+                  <option>Japan</option>
+                  <option>South Korea</option>
+                  <option>United Kingdom</option>
+                  <option>Australia</option>
+                  <option>New Zealand</option>
+                </select>
+              </label>
+
+              <div class="row2">
+                <label class="field">
+                  <span class="field__label">First name</span>
+                  <input class="field__input" type="text" placeholder="First name" />
+                </label>
+
+                <label class="field">
+                  <span class="field__label">Last name</span>
+                  <input class="field__input" type="text" placeholder="Last name" />
+                </label>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Address</span>
+                <input class="field__input" type="text" placeholder="Address" />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Apartment, suite, etc. (optional)</span>
+                <input class="field__input" type="text" placeholder="Apartment, suite, etc. (optional)" />
+              </label>
+
+              <div class="row3">
+                <label class="field">
+                  <span class="field__label">City</span>
+                  <input class="field__input" type="text" placeholder="City" />
+                </label>
+
+                <label class="field">
+                  <span class="field__label">State</span>
+                  <select class="field__input">
+                    <option>State</option>
+                    <option>CA</option>
+                    <option>NY</option>
+                    <option>TX</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span class="field__label">ZIP code</span>
+                  <input class="field__input" type="text" placeholder="ZIP code" />
+                </label>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Phone</span>
+                <input class="field__input" type="tel" placeholder="Phone" />
+              </label>
+            </div>
+
+            <div class="checkout-block">
+              <div class="checkout-block__head">
+                <div class="checkout-block__title">Payment</div>
+              </div>
+
+              <div class="checkout-note">All transactions are secure and encrypted.</div>
+
+              <div class="paybox">
+                <label class="radio">
+                  <input type="radio" name="pay" checked />
+                  <span>Credit card</span>
+                </label>
+
+                <label class="field">
+                  <span class="field__label">Card number</span>
+                  <input class="field__input" type="text" placeholder="Card number" />
+                </label>
+
+                <div class="row2">
+                  <label class="field">
+                    <span class="field__label">Expiration date (MM / YY)</span>
+                    <input class="field__input" type="text" placeholder="MM / YY" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field__label">Security code</span>
+                    <input class="field__input" type="text" placeholder="Security code" />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span class="field__label">Name on card</span>
+                  <input class="field__input" type="text" placeholder="Name on card" />
+                </label>
+
+                <label class="check">
+                  <input type="checkbox" checked />
+                  <span>Use shipping address as billing address</span>
+                </label>
+
+                <label class="radio radio--muted">
+                  <input type="radio" name="pay" />
+                  <span>Shop Pay · Pay in full or in installments</span>
+                </label>
+
+                <label class="radio radio--muted">
+                  <input type="radio" name="pay" />
+                  <span>PayPal</span>
+                </label>
+              </div>
+
+              <div class="checkout-block__foot">
+                <button class="paynow" type="submit">Pay now</button>
+              </div>
+            </div>
+
+            <div class="checkout-block">
+              <div class="checkout-block__head">
+                <div class="checkout-block__title">Remember me</div>
+              </div>
+
+              <label class="check">
+                <input type="checkbox" />
+                <span>Save my information for a faster checkout</span>
+              </label>
+            </div>
+          </form>
+
+        </div>
+      </section>
+
+      <aside class="checkout-page__right" aria-label="Order summary">
+        <div class="checkout-page__summary" id="checkoutSummary">
+        </div>
+      </aside>
     </div>
   </main>
 
@@ -180,7 +364,7 @@
     </div>
   </footer>
 
-  <script type="module" src="../scripts/cart-page.js"></script>
+  <script type="module" src="../scripts/checkout-page.js"></script>
   <script src="../scripts/currency.js"></script>
   <script src="../scripts/footer-select.js"></script>
   <script src="../scripts/script.js"></script>
