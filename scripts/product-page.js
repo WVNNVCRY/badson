@@ -37,7 +37,7 @@ function ensureCm(product) {
       r.cm = r.in.map((v) => {
         const n = Number(v);
         if (Number.isNaN(n)) return "";
-        return Math.round(n * 2.54 * 10) / 10; // 0.1cm
+        return Math.round(n * 2.54 * 10) / 10;
       });
     }
   });
@@ -79,33 +79,32 @@ function renderSizingTable(product, unit = "in") {
     .join("");
 
   return `
-    <div class="pdp-table-box">
-      <div class="pdp-table-head">
-        <button class="pdp-size__unit ${unit === "in" ? "is-active" : ""}" type="button" data-action="unit" data-unit="in">IN</button>
-        <span class="pdp-size__slash">/</span>
-        <button class="pdp-size__unit ${unit === "cm" ? "is-active" : ""}" type="button" data-action="unit" data-unit="cm">CM</button>
-      </div>
-
-      <div class="pdp-table-wrap">
-        <table class="pdp-table" data-sizing-table data-unit="${unit}">
-          <thead>
-            <tr>
-              <th scope="col" class="pdp-table__first">IN / CM</th>
-              ${head}
-            </tr>
-          </thead>
-          <tbody>${body}</tbody>
-        </table>
-      </div>
-    </div>
+    <table class="pdp-table" data-sizing-table data-unit="${unit}">
+      <thead>
+        <tr>
+          <th scope="col" class="pdp-table__first">
+            <button
+              type="button"
+              class="pdp-unit-toggle ${unit === "cm" ? "is-active" : ""}"
+              data-action="toggle-unit"
+            >IN / CM</button>
+          </th>
+          ${head}
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
   `;
 }
 
 function renderFitTab(product, unit = "in") {
   const notes = product.sizing?.notes || [];
+
   return `
     ${renderBullets(notes)}
-    ${renderSizingTable(product, unit)}
+    <div class="pdp-table-wrap">
+      ${renderSizingTable(product, unit)}
+    </div>
   `;
 }
 
@@ -125,7 +124,7 @@ let selectedSize =
   presetSize && product.sizes?.includes(presetSize) ? presetSize : null;
 
 let activeImg = hero || thumbs[0] || "";
-let activeTab = "details"; // details | fit | shipping
+let activeTab = "details";
 let fitUnit = "in";
 
 function setUrlSize(size) {
@@ -152,7 +151,7 @@ function render() {
           ${activeImg ? `<img class="pdp-col__hero-img" src="${activeImg}" alt="">` : ""}
         </div>
 
-        <div class="pdp-col__thumbs" aria-label="Thumbnails">
+        <div class="pdp-col__thumbs">
           ${thumbs
       .map(
         (src, idx) => `
@@ -197,14 +196,12 @@ function render() {
           ${product.cta ?? "ADD"}
         </button>
 
-        <div class="pdp-col__tabs" role="tablist" aria-label="Product info tabs">
+        <div class="pdp-col__tabs">
           ${["details", "fit", "shipping"]
       .map(
         (k) => `
                 <button class="pdp-col__tab ${activeTab === k ? "is-active" : ""}"
                         type="button"
-                        role="tab"
-                        aria-selected="${activeTab === k}"
                         data-action="tab"
                         data-tab="${k}">
                   ${getTabLabel(k)}
@@ -214,7 +211,7 @@ function render() {
       .join("")}
         </div>
 
-        <div class="pdp-col__panel" role="tabpanel">
+        <div class="pdp-col__panel">
           ${activeTab === "details"
       ? renderDetailsTab(product)
       : activeTab === "fit"
@@ -256,8 +253,9 @@ root.addEventListener("click", (e) => {
     return;
   }
 
-  if (action === "unit") {
-    fitUnit = btn.dataset.unit;
+  if (action === "toggle-unit") {
+    if (activeTab !== "fit") return;
+    fitUnit = fitUnit === "in" ? "cm" : "in";
     render();
     return;
   }
@@ -276,7 +274,6 @@ root.addEventListener("click", (e) => {
       img: product.img,
     });
 
-    goToCart();
     return;
   }
 });
