@@ -101,13 +101,13 @@ function render(root) {
     if (!id) return;
 
     if (e.target.closest("[data-inc]")) {
-      incQty(id, 1);
+      incQty(id, undefined, 1);
       render(root);
       return;
     }
 
     if (e.target.closest("[data-dec]")) {
-      decQty(id, 1);
+      decQty(id, undefined, 1);
       render(root);
       return;
     }

@@ -19,6 +19,30 @@ function normalizeToArray(raw) {
   return [];
 }
 
+function buildId(slug, size) {
+  const s = String(slug || "").trim();
+  const z = String(size || "").trim();
+  if (!s || !z) return null;
+  return `${s}__${z}`;
+}
+
+function parseKey(a, b) {
+  const A = String(a ?? "").trim();
+
+  if (b === undefined || b === null) {
+    return { id: A || null, slug: null, size: null };
+  }
+
+  const B = String(b ?? "").trim();
+
+  if (B && !/^\d+$/.test(B) && A.includes("__")) {
+    return { id: A, slug: null, size: null };
+  }
+
+  const id = buildId(A, B);
+  return { id, slug: A, size: B };
+}
+
 function loadCart() {
   const str = localStorage.getItem(STORAGE_KEY);
   if (!str) return [];
@@ -30,24 +54,26 @@ function loadCart() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
   }
 
-  return arr.map((it) => {
-    const slug = String(it.slug || "").trim();
-    const size = String(it.size || "").trim();
-    const id = it.id ?? (slug && size ? `${slug}__${size}` : null);
+  return arr
+    .map((it) => {
+      const slug = String(it.slug || "").trim();
+      const size = String(it.size || "").trim();
+      const id = it.id ?? (slug && size ? `${slug}__${size}` : null);
 
-    return {
-      ...it,
-      id,
-      slug,
-      size,
-      qty: Number(it.qty || 0) || 1,
-      price: Number(it.price || 0) || 0,
-      currency: it.currency || "USD",
-      title: it.title || "",
-      subtitle: it.subtitle || "",
-      img: it.img || "",
-    };
-  }).filter((it) => it.id);
+      return {
+        ...it,
+        id,
+        slug,
+        size,
+        qty: Number(it.qty || 0) || 1,
+        price: Number(it.price || 0) || 0,
+        currency: it.currency || "USD",
+        title: it.title || "",
+        subtitle: it.subtitle || "",
+        img: it.img || "",
+      };
+    })
+    .filter((it) => it.id);
 }
 
 function saveCart(arr) {
@@ -108,28 +134,35 @@ export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", pric
   return next;
 }
 
-export function incQty(slug, size, step = 1) {
-  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
+export function incQty(a, b, c) {
+  const { id } = parseKey(a, b);
+  const step = b === undefined ? c : c;
+  const add = clampQty(step ?? 1);
+
+  if (!id) return loadCart();
+
   const cart = loadCart();
   const idx = cart.findIndex((x) => x.id === id);
   if (idx < 0) return cart;
 
   const next = [...cart];
-  const add = clampQty(step);
   next[idx] = { ...next[idx], qty: Number(next[idx].qty || 0) + add };
-
   saveCart(next);
   return next;
 }
 
-export function decQty(slug, size, step = 1) {
-  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
+export function decQty(a, b, c) {
+  const { id } = parseKey(a, b);
+  const step = b === undefined ? c : c;
+  const sub = clampQty(step ?? 1);
+
+  if (!id) return loadCart();
+
   const cart = loadCart();
   const idx = cart.findIndex((x) => x.id === id);
   if (idx < 0) return cart;
 
   const next = [...cart];
-  const sub = clampQty(step);
   const cur = Number(next[idx].qty || 0);
   const newQty = cur - sub;
 
@@ -144,8 +177,10 @@ export function decQty(slug, size, step = 1) {
   return next;
 }
 
-export function removeFromCart(slug, size) {
-  const id = `${String(slug || "").trim()}__${String(size || "").trim()}`;
+export function removeFromCart(a, b) {
+  const { id } = parseKey(a, b);
+  if (!id) return loadCart();
+
   const cart = loadCart();
   const next = cart.filter((x) => x.id !== id);
   saveCart(next);
