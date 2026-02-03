@@ -87,7 +87,7 @@ function renderSizingTable(product, unit = "in") {
               type="button"
               class="pdp-unit-toggle ${unit === "cm" ? "is-active" : ""}"
               data-action="toggle-unit"
-            >IN / CM</button>
+            ><span class="${unit === 'in' ? 'is-active' : ''}">IN </span> / <span class="${unit === 'cm' ? 'is-active' : ''}"> CM</span></button>
           </th>
           ${head}
         </tr>

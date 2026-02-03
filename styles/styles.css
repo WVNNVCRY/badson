@@ -680,8 +680,7 @@ button {
   opacity: 0.55;
 }
 
-.pdp-unit__in.is-active,
-.pdp-unit__cm.is-active {
+.pdp-unit-toggle span.is-active {
   opacity: 1;
   color: oklch(62.7% 0.194 149.214);
   border-bottom: 2px solid oklch(62.7% 0.194 149.214);
