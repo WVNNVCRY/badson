@@ -1,37 +1,22 @@
-import { getProductBySlug, formatMoney } from "./products.js";
+import { fetchProductBySlug } from "./cms.js";
+import { PRODUCT_EXTRA_BY_SLUG } from "./products-extra.js";
 import { addToCart } from "./cart-store.js";
-
-const root = document.getElementById("productRoot");
-const params = new URLSearchParams(location.search);
-
-const slug = params.get("slug");
-const presetSize = params.get("SIZE");
 
 function assetUrl(path) {
   if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+
   const clean = String(path).replace(/^(\.\/|\/)/, "");
   return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
 
-if (!root) throw new Error("Не найден #productRoot в product.html");
-
-if (!slug) {
-  root.innerHTML = `
-    <p>Нет slug.</p>
-    <p>Открой так: <code>./product.html?slug=green-oxygen-heavy-jacket&SIZE=S</code></p>
-  `;
-  throw new Error("Missing slug");
-}
-
-const product = getProductBySlug(slug);
-
-if (!product) {
-  root.innerHTML = `<p>Товар не найден: <code>${slug}</code></p>`;
-  throw new Error("Product not found");
+function formatMoneyUSD(amount) {
+  const n = Number(amount) || 0;
+  return `$${n.toFixed(2)}`;
 }
 
 function ensureCm(product) {
-  const rows = product.sizing?.rows || [];
+  const rows = product?.sizing?.rows || [];
   rows.forEach((r) => {
     if (!r.cm && Array.isArray(r.in)) {
       r.cm = r.in.map((v) => {
@@ -44,7 +29,7 @@ function ensureCm(product) {
 }
 
 function renderBullets(items = []) {
-  if (!items.length) return "";
+  if (!Array.isArray(items) || !items.length) return "";
   return `<ul class="pdp-col__bullets">${items.map((t) => `<li>${t}</li>`).join("")}</ul>`;
 }
 
@@ -87,7 +72,8 @@ function renderSizingTable(product, unit = "in") {
               type="button"
               class="pdp-unit-toggle ${unit === "cm" ? "is-active" : ""}"
               data-action="toggle-unit"
-            ><span class="${unit === 'in' ? 'is-active' : ''}">IN </span> / <span class="${unit === 'cm' ? 'is-active' : ''}"> CM</span></button>
+            ><span class="${unit === "in" ? "is-active" : ""}">IN</span> / <span class="${unit === "cm" ? "is-active" : ""
+    }">CM</span></button>
           </th>
           ${head}
         </tr>
@@ -99,7 +85,6 @@ function renderSizingTable(product, unit = "in") {
 
 function renderFitTab(product, unit = "in") {
   const notes = product.sizing?.notes || [];
-
   return `
     ${renderBullets(notes)}
     <div class="pdp-table-wrap">
@@ -108,24 +93,12 @@ function renderFitTab(product, unit = "in") {
   `;
 }
 
-ensureCm(product);
-
-const titleMain = product.title ?? "";
-const titleSub = product.subtitle ?? "";
-
-const heroRaw = product.img || product.images?.[0] || "";
-const thumbsRaw = [heroRaw, ...(product.images || [])].filter(Boolean);
-const uniqThumbsRaw = Array.from(new Set(thumbsRaw));
-
-const hero = assetUrl(heroRaw);
-const thumbs = uniqThumbsRaw.map(assetUrl);
-
-let selectedSize =
-  presetSize && product.sizes?.includes(presetSize) ? presetSize : null;
-
-let activeImg = hero || thumbs[0] || "";
-let activeTab = "details";
-let fitUnit = "in";
+function getTabLabel(key) {
+  if (key === "details") return "DETAILS";
+  if (key === "fit") return "FIT / SIZING";
+  if (key === "shipping") return "SHIPPING";
+  return String(key).toUpperCase();
+}
 
 function setUrlSize(size) {
   const u = new URL(location.href);
@@ -133,15 +106,55 @@ function setUrlSize(size) {
   history.replaceState({}, "", u);
 }
 
-function getTabLabel(key) {
-  if (key === "details") return "DETAILS";
-  if (key === "fit") return "FIT / SIZING";
-  if (key === "shipping") return "SHIPPING";
-  return key.toUpperCase();
+// ---------- main ----------
+const root = document.getElementById("productRoot");
+if (!root) throw new Error("Не найден #productRoot в product.html");
+
+const params = new URLSearchParams(location.search);
+const slug = params.get("slug");
+const presetSize = params.get("SIZE");
+
+if (!slug) {
+  root.innerHTML = `
+    <p>Нет slug.</p>
+    <p>Открой так: <code>./product.html?slug=green-oxygen-heavy-jacket&SIZE=S</code></p>
+  `;
+  throw new Error("Missing slug");
+}
+
+root.innerHTML = `<p style="padding:24px; font-weight:700;">Loading...</p>`;
+
+let product = null;
+
+let selectedSize = null;
+let activeImg = "";
+let activeTab = "details";
+let fitUnit = "in";
+let thumbs = [];
+
+function initSelectedSize() {
+  if (presetSize && product?.sizes?.includes(presetSize)) return presetSize;
+  return null;
+}
+
+function buildGallery() {
+  const heroRaw = product.img || product.images?.[0] || "";
+  const thumbsRaw = [heroRaw, ...(product.images || [])].filter(Boolean);
+  const uniq = Array.from(new Set(thumbsRaw));
+
+  thumbs = uniq.map(assetUrl);
+  activeImg = assetUrl(heroRaw) || thumbs[0] || "";
 }
 
 function render() {
-  const priceStr = formatMoney(product.price, product.currency);
+  const titleMain = product.title ?? "";
+  const titleSub = product.subtitle ?? "";
+
+  const priceValue = Number(product.price) || 0;
+  const priceStr = formatMoneyUSD(priceValue);
+
+  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+  const ctaText = product.cta ?? "ADD";
 
   root.innerHTML = `
     <section class="pdp-col">
@@ -171,13 +184,13 @@ function render() {
           ${titleSub ? `<div class="pdp-col__subtitle">${titleSub}</div>` : ""}
         </h1>
 
-        <div class="pdp-col__price" data-money data-usd="${Number(product.price).toFixed(2)}">
+        <div class="pdp-col__price" data-money data-usd="${priceValue.toFixed(2)}">
           ${priceStr}
         </div>
 
         <div class="pdp-col__sizes">
           <div class="pdp-col__size-row">
-            ${(product.sizes || [])
+            ${sizes
       .map(
         (s) => `
                   <button class="pdp-col__size ${selectedSize === s ? "is-active" : ""}"
@@ -193,7 +206,7 @@ function render() {
         </div>
 
         <button class="pdp-col__cta" type="button" data-action="add" ${selectedSize ? "" : "disabled"}>
-          ${product.cta ?? "ADD"}
+          ${ctaText}
         </button>
 
         <div class="pdp-col__tabs">
@@ -241,8 +254,8 @@ root.addEventListener("click", (e) => {
   }
 
   if (action === "size") {
-    selectedSize = btn.dataset.size;
-    setUrlSize(selectedSize);
+    selectedSize = btn.dataset.size || null;
+    if (selectedSize) setUrlSize(selectedSize);
     render();
     return;
   }
@@ -270,12 +283,44 @@ root.addEventListener("click", (e) => {
       title: product.title,
       subtitle: product.subtitle,
       price: product.price,
-      currency: product.currency,
-      img: product.img,
+      currency: product.currency || "USD",
+      img: product.img || product.images?.[0] || "",
     });
 
     return;
   }
 });
 
-render();
+try {
+  const base = await fetchProductBySlug(slug);
+
+  if (!base) {
+    root.innerHTML = `<p>Товар не найден: <code>${slug}</code></p>`;
+    throw new Error("Product not found");
+  }
+
+  const extra = PRODUCT_EXTRA_BY_SLUG[slug] || {};
+
+  product = {
+    ...extra,
+    ...base,
+
+    price: Number(base.price ?? base.priceUSD ?? 0),
+    currency: extra.currency || base.currency || "USD",
+
+    images: (base.images && base.images.length ? base.images : extra.images) || [],
+    img: base.img || extra.img || "",
+  };
+
+  ensureCm(product);
+  buildGallery();
+  selectedSize = initSelectedSize();
+
+  render();
+} catch (err) {
+  console.error(err);
+  root.innerHTML = `
+    <p style="padding:24px; font-weight:700;">Ошибка загрузки товара.</p>
+    <p style="padding:0 24px 24px;">Открой консоль.</p>
+  `;
+}

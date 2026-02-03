@@ -25,9 +25,16 @@ const PROMOS = {
   TAKE20: { type: "fixed", value: 20, minSubtotal: 150, label: "$20 off orders $150+" },
 };
 
+const CMS_URL = "http://localhost:1337";
+
 function assetUrl(path) {
   if (!path) return "";
-  const clean = String(path).replace(/^(\.\/|\/)/, "");
+  const p = String(path);
+
+  if (/^https?:\/\//i.test(p)) return p;
+  if (p.startsWith("/uploads/")) return `${CMS_URL}${p}`;
+
+  const clean = p.replace(/^(\.\/|\/)/, "");
   return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
 
