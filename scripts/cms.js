@@ -1,4 +1,4 @@
-const CMS_URL = "http://localhost:1337";
+const CMS_URL = "https://badson-cms-production.up.railway.app";
 
 function cmsMediaUrl(path) {
   if (!path) return "";
