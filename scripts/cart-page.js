@@ -1,8 +1,15 @@
 import { getCart, incQty, decQty, removeFromCart, calcSubtotalUSD } from "./cart-store.js";
 
+const CMS_URL = "http://localhost:1337";
+
 function assetUrl(path) {
   if (!path) return "";
-  const clean = String(path).replace(/^(\.\/|\/)/, "");
+  const p = String(path);
+
+  if (/^https?:\/\//i.test(p)) return p;
+  if (p.startsWith("/uploads/")) return `${CMS_URL}${p}`;
+
+  const clean = p.replace(/^(\.\/|\/)/, "");
   return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
 
@@ -101,13 +108,13 @@ function render(root) {
     if (!id) return;
 
     if (e.target.closest("[data-inc]")) {
-      incQty(id, 1);
+      incQty(id, undefined, 1);
       render(root);
       return;
     }
 
     if (e.target.closest("[data-dec]")) {
-      decQty(id, 1);
+      decQty(id, undefined, 1);
       render(root);
       return;
     }
