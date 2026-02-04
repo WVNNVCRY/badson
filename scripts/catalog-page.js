@@ -5,7 +5,9 @@ const grid = document.getElementById("catalogGrid");
 async function initCatalog() {
   try {
     const products = await fetchProducts();
-    const active = products.filter(p => p.isActive);
+    const active = products
+      .filter(p => p.isActive)
+      .sort((a, b) => a.order - b.order);
 
     grid.innerHTML = active.map(p => {
       const title = `${p.title} ${p.subtitle}`.trim();

@@ -19,8 +19,11 @@ function mapProduct(p) {
     subtitle: p.subtitle || "",
     slug: p.slug || "",
     price: Number(p.priceUSD || 0),
-    currency: "USD", // базово
+    currency: "USD",
     isActive: !!p.isActive,
+
+    order: Number.isFinite(Number(p.order)) ? Number(p.order) : 999999,
+
     img: cmsMediaUrl(firstImg),
     images: (p.images || []).map((img) => cmsMediaUrl(img.url)),
   };
@@ -36,7 +39,8 @@ export async function fetchProducts() {
 export async function fetchProductBySlug(slug) {
   const url =
     `${CMS_URL}/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}` +
-    `&populate=images&sort=order:asc`;
+    `&populate=images`;
+
   const res = await fetch(url);
   if (!res.ok) throw new Error(`CMS error: ${res.status}`);
   const json = await res.json();
