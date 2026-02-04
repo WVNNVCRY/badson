@@ -2,17 +2,43 @@ import { fetchProducts } from "./cms.js";
 
 const grid = document.getElementById("catalogGrid");
 
-async function initCatalog() {
-  try {
-    const products = await fetchProducts();
-    const active = products
-      .filter(p => p.isActive)
-      .sort((a, b) => a.order - b.order);
+function renderSkeletons(count = 6) {
+  return Array.from({ length: count })
+    .map(
+      () => `
+      <div class="product-card skeleton" aria-hidden="true">
+        <div class="product-card__imgwrap">
+          <div class="skeleton-box skeleton-img"></div>
+        </div>
 
-    grid.innerHTML = active.map(p => {
+        <div class="product-card__meta">
+          <div class="skeleton-box skeleton-title"></div>
+          <div class="skeleton-box skeleton-subtitle"></div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+
+function renderError(message = "Failed to load products from CMS.") {
+  return `
+    <div class="catalog-error">
+      <div class="catalog-error__title">Products unavailable</div>
+      <div class="catalog-error__text">${message}</div>
+      <button class="catalog-error__btn" type="button" data-action="retry">Retry</button>
+    </div>
+  `;
+}
+
+function renderProducts(products) {
+  return products
+    .map((p) => {
       const title = `${p.title} ${p.subtitle}`.trim();
       return `
-        <a class="product-card" href="./pages/product.html?slug=${encodeURIComponent(p.slug)}" aria-label="${title}">
+        <a class="product-card" href="./pages/product.html?slug=${encodeURIComponent(
+        p.slug
+      )}" aria-label="${title}">
           <div class="product-card__imgwrap">
             <img class="product-card__img" src="${p.img}" alt="${title}" loading="lazy">
           </div>
@@ -23,13 +49,34 @@ async function initCatalog() {
           </div>
         </a>
       `;
-    }).join("");
+    })
+    .join("");
+}
+
+async function loadCatalog() {
+  if (!grid) return;
+
+  grid.innerHTML = renderSkeletons(6);
+
+  try {
+    const products = await fetchProducts();
+    const active = products.filter((p) => p.isActive);
+
+    grid.innerHTML = active.length
+      ? renderProducts(active)
+      : `<p class="catalog-empty">No products.</p>`;
 
     if (window.Currency?.apply) window.Currency.apply();
   } catch (e) {
-    grid.innerHTML = `<p>Failed to load products from CMS.</p>`;
     console.error(e);
+    grid.innerHTML = renderError(e?.message || "Unknown error");
   }
 }
 
-initCatalog();
+grid?.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-action='retry']");
+  if (!btn) return;
+  loadCatalog();
+});
+
+loadCatalog();

@@ -106,3 +106,7 @@ export const PRODUCT_EXTRA_BY_SLUG = {
     currency: "USD",
   },
 };
+
+export function getExtraBySlug(slug) {
+  return PRODUCTS_EXTRA.find((p) => p.slug === slug) || null;
+}
