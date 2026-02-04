@@ -8,9 +8,10 @@ function cmsMediaUrl(path) {
 
 function mapProduct(p) {
   const firstImg =
+    p.images?.[0]?.url ||
+    p.images?.[0]?.formats?.large?.url ||
     p.images?.[0]?.formats?.medium?.url ||
     p.images?.[0]?.formats?.small?.url ||
-    p.images?.[0]?.url ||
     "";
 
   return {
@@ -25,11 +26,21 @@ function mapProduct(p) {
     order: Number.isFinite(Number(p.order)) ? Number(p.order) : 999999,
 
     img: cmsMediaUrl(firstImg),
-    images: (p.images || []).map((img) => cmsMediaUrl(img.url)),
+    images: (p.images || []).map((img) =>
+      cmsMediaUrl(
+        img.url ||
+        img.formats?.large?.url ||
+        img.formats?.medium?.url ||
+        img.formats?.small?.url ||
+        ""
+      )
+    ),
   };
 }
 
 export async function fetchProducts() {
+  // await new Promise((r) => setTimeout(r, 4500));
+
   const res = await fetch(`${CMS_URL}/api/products?populate=images&sort=order:asc`);
   if (!res.ok) throw new Error(`CMS error: ${res.status}`);
   const json = await res.json();
@@ -37,6 +48,8 @@ export async function fetchProducts() {
 }
 
 export async function fetchProductBySlug(slug) {
+  // await new Promise((r) => setTimeout(r, 4500));
+
   const url =
     `${CMS_URL}/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}` +
     `&populate=images`;

@@ -29,11 +29,14 @@ function ensureCm(product) {
 }
 
 function renderBullets(items = []) {
-  if (!Array.isArray(items) || !items.length) return "";
+  if (!Array.isArray(items) || !items.length) return `<div class="pdp-empty">No info yet.</div>`;
   return `<ul class="pdp-col__bullets">${items.map((t) => `<li>${t}</li>`).join("")}</ul>`;
 }
 
 function renderDetailsTab(product) {
+  const has = (product.details && product.details.length) || product.disclaimer;
+  if (!has) return `<div class="pdp-empty">No details yet.</div>`;
+
   return `
     ${renderBullets(product.details || [])}
     ${product.disclaimer ? `<p class="pdp-col__note">${product.disclaimer}</p>` : ""}
@@ -48,6 +51,10 @@ function renderSizingTable(product, unit = "in") {
   const sizing = product.sizing || {};
   const cols = sizing.columns || [];
   const rows = sizing.rows || [];
+
+  if (!cols.length || !rows.length) {
+    return `<div class="pdp-empty">No sizing yet.</div>`;
+  }
 
   const head = cols.map((c) => `<th scope="col">${c}</th>`).join("");
 
@@ -70,10 +77,9 @@ function renderSizingTable(product, unit = "in") {
           <th scope="col" class="pdp-table__first">
             <button
               type="button"
-              class="pdp-unit-toggle ${unit === "cm" ? "is-active" : ""}"
+              class="pdp-unit-toggle"
               data-action="toggle-unit"
-            ><span class="${unit === "in" ? "is-active" : ""}">IN</span> / <span class="${unit === "cm" ? "is-active" : ""
-    }">CM</span></button>
+            ><span class="${unit === "in" ? "is-active" : ""}">IN</span> / <span class="${unit === "cm" ? "is-active" : ""}">CM</span></button>
           </th>
           ${head}
         </tr>
@@ -106,7 +112,54 @@ function setUrlSize(size) {
   history.replaceState({}, "", u);
 }
 
-// ---------- main ----------
+function renderSkeleton(root) {
+  root.innerHTML = `
+    <section class="pdp-col skeleton" aria-hidden="true">
+      <div class="pdp-col__wrap">
+
+        <div class="pdp-col__hero">
+          <div class="skeleton-box skeleton-hero"></div>
+        </div>
+
+        <div class="pdp-col__thumbs">
+          ${Array.from({ length: 5 }).map(() => `<div class="skeleton-box skeleton-thumb"></div>`).join("")}
+        </div>
+
+        <div class="skeleton-box skeleton-h1"></div>
+        <div class="skeleton-box skeleton-price"></div>
+
+        <div class="pdp-col__sizes">
+          <div class="pdp-col__size-row">
+            ${Array.from({ length: 5 }).map(() => `<div class="skeleton-box skeleton-chip"></div>`).join("")}
+          </div>
+        </div>
+
+        <div class="skeleton-box skeleton-cta"></div>
+
+        <div class="pdp-col__tabs">
+          <div class="skeleton-box skeleton-tab"></div>
+          <div class="skeleton-box skeleton-tab"></div>
+          <div class="skeleton-box skeleton-tab"></div>
+        </div>
+
+        <div class="pdp-col__panel">
+          ${Array.from({ length: 4 }).map(() => `<div class="skeleton-box skeleton-line"></div>`).join("")}
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
+function renderError(root, msg) {
+  root.innerHTML = `
+    <div class="pdp-error">
+      <div class="pdp-error__title">Ошибка</div>
+      <div class="pdp-error__text">${msg}</div>
+    </div>
+  `;
+}
+
 const root = document.getElementById("productRoot");
 if (!root) throw new Error("Не найден #productRoot в product.html");
 
@@ -122,7 +175,7 @@ if (!slug) {
   throw new Error("Missing slug");
 }
 
-root.innerHTML = `<p style="padding:24px; font-weight:700;">Loading...</p>`;
+renderSkeleton(root);
 
 let product = null;
 
@@ -203,6 +256,7 @@ function render() {
       )
       .join("")}
           </div>
+          ${!sizes.length ? `<div class="pdp-empty">No sizes yet.</div>` : ""}
         </div>
 
         <button class="pdp-col__cta" type="button" data-action="add" ${selectedSize ? "" : "disabled"}>
@@ -242,7 +296,7 @@ function render() {
 
 root.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-action]");
-  if (!btn) return;
+  if (!btn || !product) return;
 
   const action = btn.dataset.action;
 
@@ -295,21 +349,25 @@ try {
   const base = await fetchProductBySlug(slug);
 
   if (!base) {
-    root.innerHTML = `<p>Товар не найден: <code>${slug}</code></p>`;
+    renderError(root, `Товар не найден: ${slug}`);
     throw new Error("Product not found");
   }
 
   const extra = PRODUCT_EXTRA_BY_SLUG[slug] || {};
 
   product = {
-    ...extra,
     ...base,
+    ...extra,
 
     price: Number(base.price ?? base.priceUSD ?? 0),
     currency: extra.currency || base.currency || "USD",
 
     images: (base.images && base.images.length ? base.images : extra.images) || [],
     img: base.img || extra.img || "",
+
+    slug: base.slug || extra.slug || slug,
+    title: base.title || extra.title || "",
+    subtitle: base.subtitle || extra.subtitle || "",
   };
 
   ensureCm(product);
@@ -319,8 +377,5 @@ try {
   render();
 } catch (err) {
   console.error(err);
-  root.innerHTML = `
-    <p style="padding:24px; font-weight:700;">Ошибка загрузки товара.</p>
-    <p style="padding:0 24px 24px;">Открой консоль.</p>
-  `;
+  renderError(root, "Ошибка загрузки товара. Открой консоль.");
 }
