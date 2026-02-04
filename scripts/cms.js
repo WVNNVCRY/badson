@@ -27,14 +27,16 @@ function mapProduct(p) {
 }
 
 export async function fetchProducts() {
-  const res = await fetch(`${CMS_URL}/api/products?populate=images`);
+  const res = await fetch(`${CMS_URL}/api/products?populate=images&sort=order:asc`);
   if (!res.ok) throw new Error(`CMS error: ${res.status}`);
   const json = await res.json();
   return (json.data || []).map(mapProduct);
 }
 
 export async function fetchProductBySlug(slug) {
-  const url = `${CMS_URL}/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=images`;
+  const url =
+    `${CMS_URL}/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}` +
+    `&populate=images&sort=order:asc`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`CMS error: ${res.status}`);
   const json = await res.json();
