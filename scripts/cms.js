@@ -16,6 +16,27 @@ function mapProduct(p) {
 
   const sizing = p.sizing || null;
 
+  const rawSizes = Array.isArray(p.sizes) ? p.sizes : [];
+  const sizes = rawSizes
+    .map((s) => {
+      const label = String(s?.label ?? "").trim();
+      const stockNum = Number(s?.stock ?? 0);
+      const stock = Number.isFinite(stockNum) ? stockNum : 0;
+      const forcedSoldOut = Boolean(s?.isSoldOut);
+      const isSoldOut = forcedSoldOut || stock <= 0;
+
+      const skuRaw = String(s?.sku ?? "").trim();
+      const sku = skuRaw || (label ? `${String(p?.slug || "").trim()}-${label}` : "");
+
+      return {
+        label,
+        sku,
+        stock,
+        isSoldOut,
+      };
+    })
+    .filter((s) => s.label);
+
   return {
     id: p.id,
     title: p.title || "",
@@ -23,7 +44,7 @@ function mapProduct(p) {
     slug: p.slug || "",
 
     price: Number(p.priceUSD || 0),
-    currency: "USD",
+    currency: p.currency || "USD",
 
     isActive: !!p.isActive,
     order: Number.isFinite(Number(p.order)) ? Number(p.order) : 999999,
@@ -39,20 +60,20 @@ function mapProduct(p) {
       )
     ),
 
-    sizes: p.sizes || [],
+    sizes,
     cta: p.cta || "ADD",
 
-    details: p.details || [],
+    details: Array.isArray(p.details) ? p.details : [],
     disclaimer: p.disclaimer || "",
-    shippingList: p.shippingList || [],
+    shippingList: Array.isArray(p.shippingList) ? p.shippingList : [],
 
     sizing: sizing
       ? {
-        notes: sizing.notes || [],
-        columns: sizing.columns || [],
-        rows: (sizing.rows || []).map((r) => ({
+        notes: Array.isArray(sizing.notes) ? sizing.notes : [],
+        columns: Array.isArray(sizing.columns) ? sizing.columns : [],
+        rows: (Array.isArray(sizing.rows) ? sizing.rows : []).map((r) => ({
           key: r.key || "",
-          in: r.in || [],
+          in: Array.isArray(r.in) ? r.in : [],
         })),
       }
       : null,
@@ -61,7 +82,7 @@ function mapProduct(p) {
 
 export async function fetchProducts() {
   const res = await fetch(
-    `${CMS_URL}/api/products?sort=order:asc&populate[images]=true&populate[sizing][populate]=*`
+    `${CMS_URL}/api/products?sort=order:asc&populate[images]=true&populate[sizes]=true&populate[sizing][populate]=*`
   );
 
   if (!res.ok) throw new Error(`CMS error: ${res.status}`);
@@ -75,6 +96,7 @@ export async function fetchProductBySlug(slug) {
     `${CMS_URL}/api/products` +
     `?filters[slug][$eq]=${encodeURIComponent(slug)}` +
     `&populate[images]=true` +
+    `&populate[sizes]=true` +
     `&populate[sizing][populate]=*`;
 
   const res = await fetch(url);
