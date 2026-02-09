@@ -1,5 +1,4 @@
 import { fetchProductBySlug } from "./cms.js";
-import { PRODUCT_EXTRA_BY_SLUG } from "./products-extra.js";
 import { addToCart } from "./cart-store.js";
 
 function assetUrl(path) {
@@ -75,11 +74,10 @@ function renderSizingTable(product, unit = "in") {
       <thead>
         <tr>
           <th scope="col" class="pdp-table__first">
-            <button
-              type="button"
-              class="pdp-unit-toggle"
-              data-action="toggle-unit"
-            ><span class="${unit === "in" ? "is-active" : ""}">IN</span> / <span class="${unit === "cm" ? "is-active" : ""}">CM</span></button>
+            <button type="button" class="pdp-unit-toggle" data-action="toggle-unit">
+              <span class="${unit === "in" ? "is-active" : ""}">IN</span> /
+              <span class="${unit === "cm" ? "is-active" : ""}">CM</span>
+            </button>
           </th>
           ${head}
         </tr>
@@ -154,24 +152,22 @@ function renderSkeleton(root) {
 function renderError(root, msg) {
   root.innerHTML = `
     <div class="pdp-error">
-      <div class="pdp-error__title">Ошибка</div>
+      <div class="pdp-error__title">Error</div>
       <div class="pdp-error__text">${msg}</div>
+      <a class="pdp-error__btn" href="../index.html">Back to catalog</a>
     </div>
   `;
 }
 
 const root = document.getElementById("productRoot");
-if (!root) throw new Error("Не найден #productRoot в product.html");
+if (!root) throw new Error("Missing #productRoot in product.html");
 
 const params = new URLSearchParams(location.search);
 const slug = params.get("slug");
 const presetSize = params.get("SIZE");
 
 if (!slug) {
-  root.innerHTML = `
-    <p>Нет slug.</p>
-    <p>Открой так: <code>./product.html?slug=green-oxygen-heavy-jacket&SIZE=S</code></p>
-  `;
+  renderError(root, "Missing slug in URL.");
   throw new Error("Missing slug");
 }
 
@@ -349,25 +345,19 @@ try {
   const base = await fetchProductBySlug(slug);
 
   if (!base) {
-    renderError(root, `Товар не найден: ${slug}`);
+    renderError(root, `Product not found: ${slug}`);
     throw new Error("Product not found");
   }
 
-  const extra = PRODUCT_EXTRA_BY_SLUG[slug] || {};
-
   product = {
     ...base,
-    ...extra,
-
     price: Number(base.price ?? base.priceUSD ?? 0),
-    currency: extra.currency || base.currency || "USD",
-
-    images: (base.images && base.images.length ? base.images : extra.images) || [],
-    img: base.img || extra.img || "",
-
-    slug: base.slug || extra.slug || slug,
-    title: base.title || extra.title || "",
-    subtitle: base.subtitle || extra.subtitle || "",
+    currency: base.currency || "USD",
+    images: base.images || [],
+    img: base.img || "",
+    slug: base.slug || slug,
+    title: base.title || "",
+    subtitle: base.subtitle || "",
   };
 
   ensureCm(product);
@@ -377,5 +367,5 @@ try {
   render();
 } catch (err) {
   console.error(err);
-  renderError(root, "Ошибка загрузки товара. Открой консоль.");
+  renderError(root, "Failed to load product. Open console.");
 }

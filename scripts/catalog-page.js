@@ -21,12 +21,14 @@ function renderSkeletons(count = 6) {
     .join("");
 }
 
-function renderError(message = "Failed to load products from CMS.") {
+function renderError(message = "Failed to load products.") {
   return `
     <div class="catalog-error">
       <div class="catalog-error__title">Products unavailable</div>
       <div class="catalog-error__text">${message}</div>
-      <button class="catalog-error__btn" type="button" data-action="retry">Retry</button>
+      <button class="catalog-error__btn" type="button" data-action="retry">
+        Retry
+      </button>
     </div>
   `;
 }
@@ -35,12 +37,19 @@ function renderProducts(products) {
   return products
     .map((p) => {
       const title = `${p.title} ${p.subtitle}`.trim();
+
       return `
-        <a class="product-card" href="./pages/product.html?slug=${encodeURIComponent(
-        p.slug
-      )}" aria-label="${title}">
+        <a class="product-card"
+           href="./pages/product.html?slug=${encodeURIComponent(p.slug)}"
+           aria-label="${title}">
           <div class="product-card__imgwrap">
-            <img class="product-card__img" src="${p.img}" alt="${title}" loading="lazy">
+            <img
+              class="product-card__img"
+              src="${p.img}"
+              alt="${title}"
+              loading="lazy"
+              decoding="async"
+            >
           </div>
 
           <div class="product-card__meta">
@@ -60,7 +69,10 @@ async function loadCatalog() {
 
   try {
     const products = await fetchProducts();
-    const active = products.filter((p) => p.isActive);
+
+    const active = products
+      .filter((p) => p.isActive)
+      .sort((a, b) => a.order - b.order);
 
     grid.innerHTML = active.length
       ? renderProducts(active)
@@ -69,7 +81,7 @@ async function loadCatalog() {
     if (window.Currency?.apply) window.Currency.apply();
   } catch (e) {
     console.error(e);
-    grid.innerHTML = renderError(e?.message || "Unknown error");
+    grid.innerHTML = renderError(e?.message);
   }
 }
 
