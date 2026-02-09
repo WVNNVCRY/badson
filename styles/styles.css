@@ -587,6 +587,11 @@ button {
   justify-content: center;
 }
 
+.pdp-col__size.is-soldout {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .pdp-col__size.is-active {
   outline: 3px solid rgba(120, 210, 255, 0.55);
   outline-offset: 0;

@@ -4,7 +4,6 @@ import { addToCart } from "./cart-store.js";
 function assetUrl(path) {
   if (!path) return "";
   if (/^https?:\/\//i.test(path)) return path;
-
   const clean = String(path).replace(/^(\.\/|\/)/, "");
   return location.pathname.includes("/pages/") ? `../${clean}` : `./${clean}`;
 }
@@ -28,14 +27,15 @@ function ensureCm(product) {
 }
 
 function renderBullets(items = []) {
-  if (!Array.isArray(items) || !items.length) return `<div class="pdp-empty">No info yet.</div>`;
+  if (!Array.isArray(items) || !items.length) {
+    return `<div class="pdp-empty">No info yet.</div>`;
+  }
   return `<ul class="pdp-col__bullets">${items.map((t) => `<li>${t}</li>`).join("")}</ul>`;
 }
 
 function renderDetailsTab(product) {
   const has = (product.details && product.details.length) || product.disclaimer;
   if (!has) return `<div class="pdp-empty">No details yet.</div>`;
-
   return `
     ${renderBullets(product.details || [])}
     ${product.disclaimer ? `<p class="pdp-col__note">${product.disclaimer}</p>` : ""}
@@ -114,36 +114,26 @@ function renderSkeleton(root) {
   root.innerHTML = `
     <section class="pdp-col skeleton" aria-hidden="true">
       <div class="pdp-col__wrap">
-
-        <div class="pdp-col__hero">
-          <div class="skeleton-box skeleton-hero"></div>
-        </div>
-
+        <div class="pdp-col__hero"><div class="skeleton-box skeleton-hero"></div></div>
         <div class="pdp-col__thumbs">
           ${Array.from({ length: 5 }).map(() => `<div class="skeleton-box skeleton-thumb"></div>`).join("")}
         </div>
-
         <div class="skeleton-box skeleton-h1"></div>
         <div class="skeleton-box skeleton-price"></div>
-
         <div class="pdp-col__sizes">
           <div class="pdp-col__size-row">
             ${Array.from({ length: 5 }).map(() => `<div class="skeleton-box skeleton-chip"></div>`).join("")}
           </div>
         </div>
-
         <div class="skeleton-box skeleton-cta"></div>
-
         <div class="pdp-col__tabs">
           <div class="skeleton-box skeleton-tab"></div>
           <div class="skeleton-box skeleton-tab"></div>
           <div class="skeleton-box skeleton-tab"></div>
         </div>
-
         <div class="pdp-col__panel">
           ${Array.from({ length: 4 }).map(() => `<div class="skeleton-box skeleton-line"></div>`).join("")}
         </div>
-
       </div>
     </section>
   `;
@@ -174,15 +164,28 @@ if (!slug) {
 renderSkeleton(root);
 
 let product = null;
-
 let selectedSize = null;
 let activeImg = "";
 let activeTab = "details";
 let fitUnit = "in";
 let thumbs = [];
 
+function getSizes() {
+  return Array.isArray(product?.sizes) ? product.sizes : [];
+}
+
+function isSizeAvailable(s) {
+  return s && !s.isSoldOut && Number(s.stock ?? 0) > 0;
+}
+
+function hasAnyAvailableSize() {
+  return getSizes().some(isSizeAvailable);
+}
+
 function initSelectedSize() {
-  if (presetSize && product?.sizes?.includes(presetSize)) return presetSize;
+  const sizes = getSizes();
+  const opt = sizes.find((s) => s.label === presetSize);
+  if (opt && isSizeAvailable(opt)) return opt.label;
   return null;
 }
 
@@ -190,7 +193,6 @@ function buildGallery() {
   const heroRaw = product.img || product.images?.[0] || "";
   const thumbsRaw = [heroRaw, ...(product.images || [])].filter(Boolean);
   const uniq = Array.from(new Set(thumbsRaw));
-
   thumbs = uniq.map(assetUrl);
   activeImg = assetUrl(heroRaw) || thumbs[0] || "";
 }
@@ -198,12 +200,15 @@ function buildGallery() {
 function render() {
   const titleMain = product.title ?? "";
   const titleSub = product.subtitle ?? "";
-
   const priceValue = Number(product.price) || 0;
   const priceStr = formatMoneyUSD(priceValue);
 
-  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
-  const ctaText = product.cta ?? "ADD";
+  const sizes = getSizes();
+  const anyAvailable = hasAnyAvailableSize();
+
+  const ctaBase = product.cta ?? "ADD";
+  const ctaLabel = anyAvailable ? ctaBase : "SOLD OUT";
+  const ctaDisabled = !anyAvailable || !selectedSize;
 
   root.innerHTML = `
     <section class="pdp-col">
@@ -240,23 +245,26 @@ function render() {
         <div class="pdp-col__sizes">
           <div class="pdp-col__size-row">
             ${sizes
-      .map(
-        (s) => `
-                  <button class="pdp-col__size ${selectedSize === s ? "is-active" : ""}"
+      .map((s) => {
+        const label = s.label || "";
+        const sold = !isSizeAvailable(s);
+        return `
+                  <button class="pdp-col__size ${selectedSize === label ? "is-active" : ""} ${sold ? "is-soldout" : ""}"
                           type="button"
                           data-action="size"
-                          data-size="${s}">
-                    ${s}
+                          data-size="${label}"
+                          ${sold ? "disabled" : ""}>
+                    ${label}
                   </button>
-                `
-      )
+                `;
+      })
       .join("")}
           </div>
           ${!sizes.length ? `<div class="pdp-empty">No sizes yet.</div>` : ""}
         </div>
 
-        <button class="pdp-col__cta" type="button" data-action="add" ${selectedSize ? "" : "disabled"}>
-          ${ctaText}
+        <button class="pdp-col__cta" type="button" data-action="add" ${ctaDisabled ? "disabled" : ""}>
+          ${ctaLabel}
         </button>
 
         <div class="pdp-col__tabs">
@@ -304,8 +312,11 @@ root.addEventListener("click", (e) => {
   }
 
   if (action === "size") {
-    selectedSize = btn.dataset.size || null;
-    if (selectedSize) setUrlSize(selectedSize);
+    const label = btn.dataset.size || null;
+    const opt = getSizes().find((s) => s.label === label);
+    if (!opt || !isSizeAvailable(opt)) return;
+    selectedSize = label;
+    setUrlSize(selectedSize);
     render();
     return;
   }
@@ -325,8 +336,13 @@ root.addEventListener("click", (e) => {
 
   if (action === "add") {
     if (!selectedSize) return;
+    const opt = getSizes().find((s) => s.label === selectedSize);
+    if (!opt || !isSizeAvailable(opt)) return;
+
+    const sku = opt?.sku || `${product.slug}-${selectedSize}`;
 
     addToCart({
+      sku,
       slug: product.slug,
       size: selectedSize,
       qty: 1,
@@ -336,14 +352,11 @@ root.addEventListener("click", (e) => {
       currency: product.currency || "USD",
       img: product.img || product.images?.[0] || "",
     });
-
-    return;
   }
 });
 
 try {
   const base = await fetchProductBySlug(slug);
-
   if (!base) {
     renderError(root, `Product not found: ${slug}`);
     throw new Error("Product not found");
@@ -363,7 +376,6 @@ try {
   ensureCm(product);
   buildGallery();
   selectedSize = initSelectedSize();
-
   render();
 } catch (err) {
   console.error(err);

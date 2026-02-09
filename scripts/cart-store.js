@@ -19,13 +19,6 @@ function normalizeToArray(raw) {
   return [];
 }
 
-function buildId(slug, size) {
-  const s = String(slug || "").trim();
-  const z = String(size || "").trim();
-  if (!s || !z) return null;
-  return `${s}__${z}`;
-}
-
 function parseKey(a, b) {
   const A = String(a ?? "").trim();
 
@@ -39,8 +32,7 @@ function parseKey(a, b) {
     return { id: A, slug: null, size: null };
   }
 
-  const id = buildId(A, B);
-  return { id, slug: A, size: B };
+  return { id: null, slug: A, size: B };
 }
 
 function loadCart() {
@@ -58,11 +50,13 @@ function loadCart() {
     .map((it) => {
       const slug = String(it.slug || "").trim();
       const size = String(it.size || "").trim();
-      const id = it.id ?? (slug && size ? `${slug}__${size}` : null);
+      const sku = String(it.sku || "").trim();
+      const id = sku || (slug && size ? `${slug}__${size}` : null);
 
       return {
         ...it,
         id,
+        sku: sku || null,
         slug,
         size,
         qty: Number(it.qty || 0) || 1,
@@ -96,14 +90,26 @@ export function calcSubtotalUSD(items) {
   return arr.reduce((sum, it) => sum + Number(it.price || 0) * Number(it.qty || 0), 0);
 }
 
-export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", price = 0, currency = "USD", img = "" }) {
+export function addToCart({
+  sku = "",
+  slug,
+  size,
+  qty = 1,
+  title = "",
+  subtitle = "",
+  price = 0,
+  currency = "USD",
+  img = "",
+}) {
   const cart = loadCart();
 
+  const safeSku = String(sku || "").trim();
   const safeSlug = String(slug || "").trim();
   const safeSize = String(size || "").trim();
-  if (!safeSlug || !safeSize) return cart;
 
-  const id = `${safeSlug}__${safeSize}`;
+  const id = safeSku || (safeSlug && safeSize ? `${safeSlug}__${safeSize}` : null);
+  if (!id) return cart;
+
   const add = Math.max(1, Number(qty) || 1);
 
   const idx = cart.findIndex((x) => x.id === id);
@@ -119,6 +125,7 @@ export function addToCart({ slug, size, qty = 1, title = "", subtitle = "", pric
     ...cart,
     {
       id,
+      sku: safeSku || null,
       slug: safeSlug,
       size: safeSize,
       qty: add,
