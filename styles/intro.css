@@ -1,0 +1,130 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 9999;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+
+  transition: opacity 220ms ease;
+}
+
+.intro.is-hidden {
+  display: none;
+}
+
+.intro.is-fading {
+  opacity: 0;
+}
+
+.intro__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.intro__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(200px, 30vw);
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.intro__mark {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transform: scale(0.92);
+  will-change: opacity, transform;
+}
+
+.intro__mark.is-revealed {
+  animation: markIn 1100ms cubic-bezier(.12, .92, .2, 1) forwards;
+}
+
+@keyframes markIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(30px)
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.02);
+    filter: blur(15px)
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.intro__tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #000;
+
+  opacity: 0;
+  transform: translate3d(var(--x), var(--y), 0) rotate(var(--r));
+  will-change: opacity, transform, filter;
+  pointer-events: none;
+  user-select: none;
+  filter: blur(0px);
+}
+
+.intro__tag.is-in {
+  animation: tagIn 520ms cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+@keyframes tagIn {
+  from {
+    opacity: 0;
+    filter: blur(0.25px);
+  }
+
+  to {
+    opacity: var(--a);
+    filter: blur(0px);
+  }
+}
+
+.intro.is-clearing .intro__tag {
+  transition: opacity 420ms ease;
+  opacity: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none !important;
+  }
+}
+
+.app {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 520ms ease, transform 700ms cubic-bezier(.2, .9, .2, 1);
+  pointer-events: none;
+}
+
+.app.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.app.is-hidden {
+  opacity: 0;
+}
