@@ -1,5 +1,14 @@
 import { fetchProductBySlug } from "./cms.js";
 import { addToCart } from "./cart-store.js";
+import { startBackgroundPlane } from './bg-plane.js';
+
+startBackgroundPlane({
+  speed: 60,
+  changeDirMs: 850,
+  planeSize: 30,
+  planeWobble: 0.08,
+  planeAngleOffset: Math.PI,
+});
 
 function assetUrl(path) {
   if (!path) return "";
