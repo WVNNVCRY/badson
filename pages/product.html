@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BADSON</title>
   <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/plane.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
@@ -13,6 +14,38 @@
 </head>
 
 <body>
+
+  <canvas class="bg-trail"></canvas>
+
+  <div class="bg-plane">
+    <svg class="plane" viewBox="0 0 120 80" aria-hidden="true">
+      <circle id="tail" cx="90" cy="42" r="1.5" fill="red" />
+      <!-- контур самолётика -->
+      <path d="M10 44
+       L112 14
+       L78 44
+       L112 66
+       Z" fill="none" stroke="#2a2a2a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- внутренние линии (сгибы) -->
+      <path d="M112 14
+       L64 40
+       L112 66" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"
+        opacity="0.9" />
+
+      <path d="M64 40
+       L78 44" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"
+        opacity="0.9" />
+
+      <!-- лёгкий “карандашный” дубль контура (чуть слабее) -->
+      <path d="M10.6 44.3
+       L111.2 14.6
+       L77.6 44.1
+       L111.3 65.4
+       Z" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"
+        opacity="0.35" />
+    </svg>
+  </div>
 
   <header class="site-header">
 

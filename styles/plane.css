@@ -1,0 +1,58 @@
+/* 2 слоя: след + самолётик */
+.bg-trail,
+.bg-plane {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  display: block !important;
+}
+
+/* след ниже, самолёт выше */
+.bg-trail {
+  z-index: 0 !important;
+}
+
+.bg-plane {
+  z-index: 1 !important;
+}
+
+/* UI выше канваса, но НЕ ломаем fixed/sticky элементы */
+.site-header {
+  z-index: 30;
+}
+
+/* у тебя уже есть */
+.menu-overlay {
+  z-index: 40;
+}
+
+/* у тебя уже есть */
+.side-menu {
+  z-index: 50;
+}
+
+/* у тебя уже есть */
+
+/* вот этим можно поднять контент и футер над канвасом */
+.product,
+.site-footer {
+  position: relative;
+  z-index: 2;
+}
+
+canvas.bg-plane,
+canvas.bg-trail {
+  position: fixed !important;
+  inset: 0 !important;
+  display: block !important;
+}
+
+.plane {
+  position: absolute;
+  width: 28px;
+  opacity: 0.85;
+  transform-origin: center;
+  transform: rotate(180deg);
+}
