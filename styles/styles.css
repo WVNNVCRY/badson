@@ -54,7 +54,7 @@ button {
   background: transparent;
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 60;
   min-height: var(--header-height);
 }
 
@@ -150,7 +150,8 @@ button {
 .side-menu {
   position: fixed;
   left: 0;
-  height: calc(100vh - var(--header-height));
+  top: 0;
+  height: 100vh;
   width: var(--menu-width);
   min-width: 260px;
   background: #fff;

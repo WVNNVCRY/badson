@@ -18,23 +18,6 @@
   z-index: 1 !important;
 }
 
-/* UI выше канваса, но НЕ ломаем fixed/sticky элементы */
-.site-header {
-  z-index: 60;
-}
-
-/* у тебя уже есть */
-.menu-overlay {
-  z-index: 40;
-}
-
-/* у тебя уже есть */
-.side-menu {
-  z-index: 50;
-}
-
-/* у тебя уже есть */
-
 /* вот этим можно поднять контент и футер над канвасом */
 .product,
 .site-footer {
