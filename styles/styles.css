@@ -149,7 +149,6 @@ button {
 
 .side-menu {
   position: fixed;
-  top: var(--header-height);
   left: 0;
   height: calc(100vh - var(--header-height));
   width: var(--menu-width);
@@ -158,7 +157,8 @@ button {
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 50;
-  padding: 0 16px;
+  padding-left: 16px;
+  padding-top: var(--header-height);
   display: flex;
   flex-direction: column;
 }
